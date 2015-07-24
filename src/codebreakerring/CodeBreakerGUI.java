@@ -24,6 +24,8 @@ public class CodeBreakerGUI {
 
 	private JFrame frmCodeBreakerRing;
 	
+	private Code code;
+	
 	private JPanel  game_container,
 					panel,
 					panel_marble_0,
@@ -63,6 +65,7 @@ public class CodeBreakerGUI {
 				   	marbleColor5,
 				   	marbleColor6,
 				   	marbleColor7;
+	
 	private String[] color_list = {	"red", 
 									"orange", 
 									"yellow",
@@ -72,7 +75,8 @@ public class CodeBreakerGUI {
 									"magnenta",
 									"pink"};
 	
-	private int a;
+	private int a, pos = 0;
+	private Integer icon_set = 0;
 	
 	public JFrame getFrmCodeBreakerRing() {
 		return this.frmCodeBreakerRing;
@@ -108,6 +112,7 @@ public class CodeBreakerGUI {
 	   	marbleColor5 = new JLabel();
 	   	marbleColor6 = new JLabel();
 	   	marbleColor7 = new JLabel();
+	   	code = new Code();
 	   	
 		initialize();
 	}
@@ -321,6 +326,7 @@ public class CodeBreakerGUI {
 		
 		for (a = 0; a < 6; a++) {
 			labels[a].setIcon(new ImageIcon(CodeBreakerGUI.class.getResource("/codebreakerring/img/hole.png")));
+			this.code.getMarbles().get(a).setLabel(labels[a]);
 		}
 		
 		for (a = 6; a < 12; a++) { 
@@ -328,17 +334,19 @@ public class CodeBreakerGUI {
 		}
 		
 		for (a = 12; a < labels.length; a++) {
-			labels[a].setIcon(new ImageIcon(CodeBreakerGUI.class.getResource("/codebreakerring/img/" + this.color_list[a - 12] + "_0.png")));
+			labels[a].setIcon(new ImageIcon(CodeBreakerGUI.class.getResource("/codebreakerring/img/" + this.color_list[a - 12] + "_" + icon_set.toString() + ".png")));
+			panel_6.add(labels[a]);
+			labels[a].addMouseListener(new LabelListener(labels[a], a - 12, labels, color_list, icon_set, pos, code));
 		}
 		
 		for (a = 6; a < labels.length; a++) {
 			labels[a].setHorizontalAlignment(SwingConstants.CENTER);
 		}
 			
-		for (a = 12; a < 20; a++) {
-			panel_6.add(labels[a]);
-			labels[a].addMouseListener(new LabelListener(labels[a]));
-		}
+	}
+	
+	public void game() {
+		
 	}
 	
 	public void newGame(JLabel[] labels) {

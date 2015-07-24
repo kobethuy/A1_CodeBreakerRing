@@ -5,7 +5,6 @@ import javax.swing.JLabel;
 public class Marble {
 	
 	private int color_code, position;
-	private String color_name;
 	private JLabel label;
 	private String[] color_list = {	"red", 
 									"orange", 
@@ -29,16 +28,16 @@ public class Marble {
 		return this.position;
 	}
 
-	public String getColor_name() {
-		return this.color_name;
-	}
-
 	public String[] getColor_list() {
 		return this.color_list;
 	}
 	
 	public JLabel getLabel() {
-		return this.label;
+		return label;
+	}
+
+	public void setLabel(JLabel label) {
+		this.label = label;
 	}
 
 	public void setColor_code(int color_code) {
@@ -49,15 +48,8 @@ public class Marble {
 		this.position = position;
 	}
 
-	public void setColor_name(String color_name) {
-		this.color_name = color_name;
-	}
-
 	public void setColor_list(String[] color_list) {
 		this.color_list = color_list;
 	}
 	
-	public void setLabel(JLabel label) {
-		this.label = label;
-	}
 }
