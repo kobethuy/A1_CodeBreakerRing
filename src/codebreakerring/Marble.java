@@ -6,6 +6,7 @@ public class Marble {
 	
 	private int color_code, position;
 	private JLabel label;
+	private boolean label_state = false;
 	private String[] color_list = {	"red", 
 									"orange", 
 									"yellow",
@@ -33,7 +34,15 @@ public class Marble {
 	}
 	
 	public JLabel getLabel() {
-		return label;
+		return this.label;
+	}
+
+	public boolean isLabel_state() {
+		return this.label_state;
+	}
+
+	public void setLabel_state(boolean label_state) {
+		this.label_state = label_state;
 	}
 
 	public void setLabel(JLabel label) {
