@@ -6,10 +6,10 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.Arrays;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
@@ -17,10 +17,11 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.SwingConstants;
 import javax.swing.border.LineBorder;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
 public class CodeBreakerGUI {
 
@@ -74,40 +75,27 @@ public class CodeBreakerGUI {
 				   	ring_4,
 				   	ring_5;
 	
-	private String[] color_list = {	"red", 
-									"orange", 
-									"yellow",
-									"green", 
-									"cyan",
-									"blue", 
-									"magnenta",
-									"pink"};
+	private static JLabel lblTime, lblScore;
+	
+	private static String[] color_list = { "red", 
+										   "orange", 
+										   "yellow",
+										   "green", 
+										   "cyan",
+										   "blue", 
+										   "magnenta",
+										   "pink"};
 	
 	private int a;
 	
-	private static int pos = 0;
+	private static int pos = 0, move = 0, score = 0;
 	
-	private String[] ans = {"1",
-							"1",
-							"1",
-							"1",
-							"1",
-							"1"};
-	
-	private int[] hint = {-1, -1, -1, -1, -1, -1};
-	private int[] dummy = {-1, -1, -1, -1, -1, -1};
-	
-	private Integer icon_set = 0;
+	private static Integer icon_set = 0;
 
 	private JButton quitButton,
 					btnNewGame,
 					acceptButton,
-					timerButton,
 					giveUpButton;
-
-	private JTextArea scoreBoard;
-
-	private JScrollPane scrollPane;
 
 	private JMenuBar menuBar;
 
@@ -117,6 +105,10 @@ public class CodeBreakerGUI {
 					  mntmAbout;
 
 	private FlowLayout flowLayout;
+	
+	private MenuOption options;
+	private JTextArea giveUp;
+	private static JLabel lblMove;
 	
 	public JFrame getFrmCodeBreakerRing() {
 		return this.frmCodeBreakerRing;
@@ -171,23 +163,21 @@ public class CodeBreakerGUI {
 	   	marbleColor5 = new JLabel();
 	   	marbleColor6 = new JLabel();
 	   	marbleColor7 = new JLabel();
+	   	lblMove = new JLabel("Move: " + move);
+	   	lblScore = new JLabel("Score: " + score);
+	   	giveUp = new JTextArea("");
+	   	lblTime = new JLabel("Time: 00:00");
 	   	btnNewGame = new JButton("New Game");
 	   	quitButton = new JButton("Quit");
-	   	timerButton = new JButton("Pause");
 	   	acceptButton = new JButton("Accept");
 	   	giveUpButton = new JButton("Give Up");
-	   	scoreBoard = new JTextArea();
-	   	scrollPane = new JScrollPane(scoreBoard);
 	   	menuBar = new JMenuBar();
 	   	mnFile = new JMenu("File");
 	   	mntmOptions = new JMenuItem("Options");
 	   	mntmAbout = new JMenuItem("About");
 	   	flowLayout = (FlowLayout) panel_6.getLayout();
 	   	code = new Code();
-	   	
-	   	// Debug
-	   	for (a = 0; a < 6; a++)
-	   		System.out.println(code.getMarbles().get(a).getColor_list()[code.getMarbles().get(a).getColor_code()]);
+	   	options = new MenuOption();
 	   	
 		initialize();
 	}
@@ -244,9 +234,11 @@ public class CodeBreakerGUI {
 		panel.add(panel_marble_1);
 		panel.add(panel_marble_2);
 		panel_1.add(btnNewGame);
-		panel_2.add(scrollPane);
+		panel_2.add(lblTime);
+		panel_2.add(giveUp);
+		panel_2.add(lblScore);
+		panel_2.add(lblMove);
 		panel_3.add(acceptButton);
-		panel_3.add(timerButton);
 		panel_3.add(giveUpButton);
 		panel_5.add(panel_1);
 		panel_5.add(panel_2);
@@ -305,12 +297,13 @@ public class CodeBreakerGUI {
 		ring_3.setBounds(280, 48, 60, 60);
 		ring_4.setBounds(100, 48, 60, 60);
 		ring_5.setBounds(30, 48, 60, 60);
+		giveUp.setBounds(10, 80, 265, 195);
+		lblMove.setBounds(135, 11, 140, 25);
+		lblScore.setBounds(10, 50, 265, 20);
+		lblTime.setBounds(10, 11, 115, 25);
 		btnNewGame.setBounds(0, 0, 285, 70);
-		scoreBoard.setBounds(0, 0, 4, 22);
-		scrollPane.setBounds(0, 0, 285, 285);
-		acceptButton.setBounds(10, 25, 80, 23);
-		timerButton.setBounds(200, 25, 70, 23);
-		giveUpButton.setBounds(105, 25, 85, 23);
+		acceptButton.setBounds(10, 25, 85, 23);
+		giveUpButton.setBounds(190, 25, 85, 23);
 		quitButton.setBounds(2, 2, 288, 115);
 		
 		game_container.setLayout(null);
@@ -338,79 +331,28 @@ public class CodeBreakerGUI {
 		panel_7.setBorder(new LineBorder(new Color(0, 0, 0)));
 		panel_marble_stat_container.setBorder(new LineBorder(new Color(0, 0, 0)));
 		
+		lblTime.setFont(new Font("Tahoma", Font.PLAIN, 20));
+		lblScore.setFont(new Font("Tahoma", Font.PLAIN, 20));
+		giveUp.setFont(new Font("Tahoma", Font.PLAIN, 20));
+		lblMove.setFont(new Font("Tahoma", Font.PLAIN, 20));
 		btnNewGame.setFont(new Font("Tahoma", Font.PLAIN, 20));
 		quitButton.setFont(new Font("Tahoma", Font.PLAIN, 30));
 		menuBar.setFont(new Font("Segoe UI", Font.PLAIN, 12));
 		mnFile.setFont(new Font("Segoe UI", Font.PLAIN, 12));
-
-		scoreBoard.setEditable(false);
+		
+		giveUp.setEditable(false);
 
 		flowLayout.setVgap(45);
 		flowLayout.setHgap(10);
 		
-		labels[pos + 20].setIcon(new ImageIcon(CodeBreakerGUI.class.getResource("/codebreakerring/img/ring.png")));;
+		labels[pos + 20].setIcon(new ImageIcon(CodeBreakerGUI.class.getResource("/codebreakerring/img/ring.png")));
 		
-		acceptButton.addMouseListener(new MouseAdapter() {
-	   		@Override
-	   		public void mouseClicked(MouseEvent e) {
-	   			ans[pos] = getFileName(labels[pos].getIcon().toString());
-	   			
-	   			System.out.println(getFileName(labels[pos].getIcon().toString()));
-	   			
-	   			if (checkWin()) {
-	   				JOptionPane.showMessageDialog(game_container, "You won!!!");
-	   				
-	   				acceptButton.setEnabled(false);
-	   				giveUpButton.setEnabled(false);
-	   				acceptButton.removeMouseListener(this);
-	   				giveUpButton.removeMouseListener(this);
-	   			}
-	   			
-	   			dummy[pos] = CodeBreakerGUI.code.hint(getColorCode(getFileName(labels[pos].getIcon().toString())), pos);
-	   			
-	   			for (a = 0; a < 6; a++)
-	   				hint[a] = dummy[a];
-	   			Arrays.sort(hint);
-	   			
-	   			for (a = 11; a > 5; a--) {
-	   				System.out.print(hint[Math.abs(a - 11)]);
-	   				if (hint[Math.abs(a - 11)] == 0) {
-	   					labels[a].setIcon(new ImageIcon(CodeBreakerGUI.class.getResource("/codebreakerring/img/white_hint.png")));
-	   				} else if (hint[Math.abs(a - 11)] == 1) {
-	   					labels[a].setIcon(new ImageIcon(CodeBreakerGUI.class.getResource("/codebreakerring/img/black_hint.png")));
-	   				}
-	   			}
-	   			
-	   			if (pos != 5) {
-	   				pos++;
-	   			} else {
-	   				pos = 0;
-	   			}
-	   			
-	   			for (a = 0; a < 6; a++) {
-	   				labels[a + 20].setIcon(null);
-	   				labels[a + 20].revalidate();
-	   			}
-	   			
-	   			labels[pos + 20].setIcon(new ImageIcon(CodeBreakerGUI.class.getResource("/codebreakerring/img/ring.png")));	   			
-	   		}
-	   	});
-		
-		timerButton.addMouseListener(new MouseAdapter() {
-	   		@Override
-	   		public void mouseClicked(MouseEvent e) {
-	   			if (timerButton.getText().contains("Pause")) {
-	   				timerButton.setText("Start");
-	   			} else {
-	   				timerButton.setText("Pause");
-	   			}
-	   		}
-	   	});
+		acceptButton.addMouseListener(new AcceptListener(labels, acceptButton, giveUpButton, game_container));
 		
 		btnNewGame.addMouseListener(new MouseAdapter() {
 	   		@Override
 	   		public void mouseClicked(MouseEvent e) {
-	   			newGame(labels);
+	   			newGame(labels, acceptButton, giveUpButton);
 	   		}
 	   	});
 		
@@ -420,6 +362,33 @@ public class CodeBreakerGUI {
 				System.exit(0);
 			}
 		});
+		
+		options.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+		
+		mntmOptions.addActionListener(new ActionListener() {
+	   		public void actionPerformed(ActionEvent arg0) {
+	   			options.setLabels(labels);
+	   			options.setVisible(true);
+	   		}
+	   	});
+		
+		giveUpButton.addMouseListener(new MouseAdapter() {
+	   		@Override
+	   		public void mouseClicked(MouseEvent arg0) {
+	   			
+	   			if (!giveUpButton.isEnabled())
+	   				return;
+	   			
+	   			JOptionPane.showMessageDialog(game_container, "You gave up!!!");
+	   			CodeBreakerMain.getTimer().stop();
+	   			lblScore.setText("Score: " + score);
+	   			acceptButton.setEnabled(false);
+	   			giveUpButton.setEnabled(false);
+	   			for (a = 0; a < 6; a++) {
+	   		   		giveUp.setText(giveUp.getText() + code.getMarbles().get(a).getColor_list()[CodeBreakerGUI.getCode().getMarbles().get(a).getColor_code()] + "\n");
+	   			}
+	   		}
+	   	});
 
 		for (a = 0; a < 6; a++) {
 			labels[a].setIcon(new ImageIcon(CodeBreakerGUI.class.getResource("/codebreakerring/img/hole.png")));
@@ -429,15 +398,12 @@ public class CodeBreakerGUI {
 		
 		for (a = 0; a < 8; a++) {
 			labels[a + 12].setIcon(new ImageIcon(CodeBreakerGUI.class.getResource("/codebreakerring/img/" 
-																				+ this.color_list[a] 
+																				+ color_list[a] 
 																				+ "_" 
 																				+ icon_set.toString()
 																				+ "_shadow.png")));
 			panel_6.add(labels[a + 12]);
-			labels[a + 12].addMouseListener(new LabelListener(a, 
-														 	  color_list, 
-														 	  icon_set, 
-														 	  code));
+			labels[a + 12].addMouseListener(new MarbleChoiceListener(a));
 		}
 		
 		for (a = 6; a < labels.length - 6; a++) {
@@ -453,61 +419,124 @@ public class CodeBreakerGUI {
 		
 	}
 	
-	public String getFileName(String path) {
-		StringBuilder substring, filename;
-		substring = new StringBuilder();
-		filename = new StringBuilder();
-		int index = path.length() - 1;
-		while (path.charAt(index) != '/') {
-			substring.append(path.charAt(index));
-			index--;
-		}
-		index = 0;
-		String name = substring.reverse().toString();
-		while (name.charAt(index) != '_') {
-			
-			if (name.contains("hole"))
-				return "null";
-			
-			filename.append(name.charAt(index));
-			index++;
-		}
-		return filename.toString();
-	}
-	
-	public boolean checkWin() {
-		
-		for (a = 0; a < 6; a++) {
-			System.out.println(ans[a] + "_" + code.getMarbles().get(a).getColor_list()[code.getMarbles().get(a).getColor_code()]);
-			if (!ans[a].equalsIgnoreCase(code.getMarbles().get(a).getColor_list()[code.getMarbles().get(a).getColor_code()])) {
-				return false;
-			}
-		}
-		return true;
-	}
-	
-	public void newGame(JLabel[] labels) {
-		for (a = 0; a < 6; a++) {
+	public void newGame(JLabel[] labels, JButton acceptButton, JButton giveUpButton) {
+		giveUp.setText(null);
+		labels[pos + 20].setIcon(null);
+		code.clear();
+		code.init();
+		pos = 0;
+		labels[pos + 20].setIcon(new ImageIcon(CodeBreakerGUI.class.getResource("/codebreakerring/img/ring.png")));
+		for (int a = 0; a < 6; a++) {
 			labels[a].setIcon(new ImageIcon(CodeBreakerGUI.class.getResource("/codebreakerring/img/hole.png")));
 			labels[a + 6].setIcon(new ImageIcon(CodeBreakerGUI.class.getResource("/codebreakerring/img/empty_hint.png")));
 			code.getMarbles().get(a).setLabel(labels[a]);
 		}
-		pos = 0;
+		move = 0;
+		score = 0;
+		lblScore.setText("Score: " + score);
+		lblMove.setText("Move: " + move);
+		acceptButton.setEnabled(true);
+		giveUpButton.setEnabled(true);
+	}
+	
+	public static void gameWin(JPanel game_container, JButton acceptButton, JButton giveUpButton) {
+		JOptionPane.showMessageDialog(game_container, "You won!!!");
+		calcScore();
+		lblScore.setText("Score: " + score);
+		acceptButton.setEnabled(false);
+		giveUpButton.setEnabled(false);
 	}
 
+	public static void gameOver(JPanel game_container, JButton acceptButton, JButton giveUpButton) {
+		JOptionPane.showMessageDialog(game_container, "You lose!!!");
+		calcScore();
+		lblScore.setText("Score: " + score);
+		acceptButton.setEnabled(false);
+		giveUpButton.setEnabled(false);
+	}
+	
 	public static int getPos() {
 		return pos;
 	}
-
+	
 	public static void setPos(int pos) {
 		CodeBreakerGUI.pos = pos;
 	}
 	
-	public int getColorCode(String color) {
-		for (a = 0; a < 8; a++) {
-			if (color_list[a].equalsIgnoreCase(color))
-				return a;
+	public static Code getCode() {
+		return code;
+	}
+	
+	public static JLabel getTimer() {
+		return lblTime;
+	}
+	
+	public static void setTimer(String timeLeft) {
+		lblTime.setText(timeLeft);
+	}
+
+	public JPanel getGame_container() {
+		return game_container;
+	}
+
+	public JButton getAcceptButton() {
+		return acceptButton;
+	}
+	
+	public JButton getGiveUpButton() {
+		return giveUpButton;
+	}
+
+	public static Integer getIcon_set() {
+		return icon_set;
+	}
+	
+	public static void setIcon_set(Integer icon_set) {
+		CodeBreakerGUI.icon_set = icon_set;
+	}
+
+	public static String[] getColor_list() {
+		return color_list;
+	}
+	
+	public static int getMove() {
+		return move;
+	}
+	
+	public static void setMove(int move) {
+		CodeBreakerGUI.move = move;
+	}
+
+	public static JLabel getLblMove() {
+		return lblMove;
+	}
+
+	public static void changeIcon(JLabel[] labels) {
+		for (int a = 0; a < 8; a++) {
+			
+			labels[a + 12].setIcon(new ImageIcon(CodeBreakerGUI.class.getResource("/codebreakerring/img/" 
+																				+ color_list[a] 
+																				+ "_" 
+																				+ icon_set.toString()
+																				+ "_shadow.png")));
 		}
-		return 10;
+	}
+	
+	public static void calcScore() {
+		if (move == 6) {
+			score = 1000;
+		} else if (6 < move && move <= 12) {
+			score = 750;
+		} else if (12 < move && move <= 36) {
+			score = 500;
+		} else if (36 < move && move <= 42) {
+			score = 250;
+		} else if (42 < move && move <= 60) {
+			score = 100;
+		} else if (60 < move && move <= 72) {
+			score = 50;
+		} else {
+			return;
+		}
 	}
 }

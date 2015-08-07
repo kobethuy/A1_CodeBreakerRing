@@ -9,7 +9,6 @@ public class Code {
 	private ArrayList<Integer> seed = new ArrayList<Integer>();
 	
 	public Code() {
-		
 		init();
 	}
 

@@ -3,28 +3,29 @@
  */
 package codebreakerring;
 
-import java.awt.EventQueue;
-
 /**
  * @author kobethuy
  *
  */
 public class CodeBreakerMain {
 	
+	private static Timer timer;
+	private static CodeBreakerGUIThread guiThread;
+	
 	/**
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					CodeBreakerGUI window = new CodeBreakerGUI();
-					window.getFrmCodeBreakerRing().setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
+		guiThread = new CodeBreakerGUIThread();
+		guiThread.start();
+		timer = new Timer(3);
+	}
+	
+	public static Timer getTimer() {
+		return timer;
+	}
+	
+	public static CodeBreakerGUIThread getGuiThread() {
+		return guiThread;
 	}
 }
